@@ -10,7 +10,12 @@ const translations = {
     laborRate: "Stawka roboczogodziny (zł/h):",
     calculate: "Oblicz",
     resultTitle: "Wynik:",
-    resultText: "Całkowity koszt: "
+    resultText: "Całkowity koszt: ",
+    currencySymbols: {
+      PLN: "zł",
+      EUR: "EUR",
+      USD: "USD"
+    }
   },
   en: {
     title: "3D Printing Cost Calculator",
@@ -23,7 +28,12 @@ const translations = {
     laborRate: "Labor cost (PLN/h):",
     calculate: "Calculate",
     resultTitle: "Result:",
-    resultText: "Total cost: "
+    resultText: "Total cost: ",
+    currencySymbols: {
+      PLN: "PLN",
+      EUR: "€",
+      USD: "$"
+    }
   }
 };
 
@@ -33,31 +43,25 @@ let exchangeRates = {
   USD: 4.0
 };
 
-const currencySymbols = {
-  PLN: "zł",
-  EUR: "€",
-  USD: "$"
-};
+let currentLanguage = "pl";
 
 async function fetchExchangeRates() {
   try {
     const response = await fetch('https://api.exchangerate.host/latest?base=PLN&symbols=EUR,USD,PLN');
     const data = await response.json();
 
-    // Przeliczamy, bo API zwraca ile PLN jest w 1 EUR i 1 USD
-    // My chcemy ile PLN = 1 EUR itd., więc odwracamy kursy
     exchangeRates.EUR = 1 / data.rates.EUR;
     exchangeRates.USD = 1 / data.rates.USD;
-    exchangeRates.PLN = 1; // PLN względem PLN
+    exchangeRates.PLN = 1;
 
     console.log("Aktualne kursy walut:", exchangeRates);
   } catch (error) {
     console.error('Błąd pobierania kursów:', error);
-    // fallback do statycznych kursów (już są w exchangeRates)
   }
 }
 
 function updateLanguage(lang) {
+  currentLanguage = lang;
   const t = translations[lang];
   document.querySelector('h1').textContent = t.title;
   document.querySelector('label[for="hours"]').textContent = t.timeHours;
@@ -70,6 +74,7 @@ function updateLanguage(lang) {
   document.querySelector('button').textContent = t.calculate;
   document.querySelector('.result-title').textContent = t.resultTitle;
   document.querySelector('.result-cost-label').textContent = t.resultText;
+  calculate();
 }
 
 function calculate() {
@@ -89,7 +94,9 @@ function calculate() {
 
   const selectedCurrency = document.getElementById("currency").value;
   const rate = exchangeRates[selectedCurrency];
-  const symbol = currencySymbols[selectedCurrency];
+
+  // Pobieramy symbol waluty dla bieżącego języka i wybranej waluty
+  const symbol = translations[currentLanguage].currencySymbols[selectedCurrency];
 
   const displayCost = totalCostPLN / rate;
 
@@ -98,13 +105,10 @@ function calculate() {
 
 document.getElementById("language").addEventListener("change", function () {
   updateLanguage(this.value);
-  calculate();
 });
 
 document.getElementById("currency").addEventListener("change", calculate);
 
-// Pobierz kursy walut i inicjuj kalkulator
 fetchExchangeRates().then(() => {
   updateLanguage("pl");
-  calculate();
 });
