@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kalkulator Druku 3D</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      background: #f7f7f7;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .results {
+      margin-top: 30px;
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .results p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kalkulator Druku 3D</h1>
+
+  <label>⏱️ Czas druku – godziny:</label>
+  <input type="number" id="godziny" />
+
+  <label>⏱️ Czas druku – minuty:</label>
+  <input type="number" id="minuty" />
+
+  <label>📏 Ilość filamentu (w gramach):</label>
+  <input type="number" step="0.01" id="filament" />
+
+  <label>💰 Cena filamentu za 1 kg (zł):</label>
+  <input type="number" step="0.01" id="cena_filamentu" />
+
+  <label>🔢 Zużycie energii z licznika (kWh):</label>
+  <input type="number" step="0.01" id="zuzycie_kwh" />
+
+  <label>🔌 Koszt 1 kWh (zł):</label>
+  <input type="number" step="0.001" id="koszt_kwh" />
+
+  <label>👨‍🔧 Stawka roboczogodziny (zł/h):</label>
+  <input type="number" step="0.01" id="stawka" />
+
+  <button onclick="obliczKoszt()">Oblicz koszt</button>
+
+  <div class="results" id="wyniki" style="display:none;">
+    <h2>📊 Podsumowanie</h2>
+    <p id="czas"></p>
+    <p id="koszt_materialu"></p>
+    <p id="koszt_energii"></p>
+    <p id="koszt_robocizny"></p>
+    <p id="calkowity"></p>
+    <p id="zaokraglony"></p>
+  </div>
+
+  <script>
+    function obliczKoszt() {
+      const godziny = parseFloat(document.getElementById("godziny").value) || 0;
+      const minuty = parseFloat(document.getElementById("minuty").value) || 0;
+      const czas = godziny + minuty / 60;
+
+      const filament = parseFloat(document.getElementById("filament").value) || 0;
+      const cena_filamentu = parseFloat(document.getElementById("cena_filamentu").value) || 0;
+      const zuzycie_kwh = parseFloat(document.getElementById("zuzycie_kwh").value) || 0;
+      const koszt_kwh = parseFloat(document.getElementById("koszt_kwh").value) || 0;
+      const stawka = parseFloat(document.getElementById("stawka").value) || 0;
+
+      const koszt_materialu = (filament / 1000) * cena_filamentu;
+      const koszt_energii = zuzycie_kwh * koszt_kwh;
+      const koszt_robocizny = czas * stawka;
+      const calkowity = koszt_materialu + koszt_energii + koszt_robocizny;
+      const zaokraglony = Math.round(calkowity);
+
+      document.getElementById("czas").textContent = `⏱️ Czas: ${godziny}h ${minuty}min (${czas.toFixed(2)} h)`;
+      document.getElementById("koszt_materialu").textContent = `🧵 Koszt materiału: ${koszt_materialu.toFixed(2)} zł`;
+      document.getElementById("koszt_energii").textContent = `⚡ Koszt energii: ${koszt_energii.toFixed(2)} zł`;
+      document.getElementById("koszt_robocizny").textContent = `👨‍🔧 Koszt robocizny: ${koszt_robocizny.toFixed(2)} zł`;
+      document.getElementById("calkowity").textContent = `💵 Całkowity koszt (dokładny): ${calkowity.toFixed(2)} zł`;
+      document.getElementById("zaokraglony").textContent = `💰 Cena po zaokrągleniu: ${zaokraglony} zł`;
+
+      document.getElementById("wyniki").style.display = "block";
+    }
+  </script>
+</body>
+</html>
