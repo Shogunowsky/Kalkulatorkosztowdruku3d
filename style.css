@@ -1,41 +1,53 @@
 body {
   font-family: 'Alumni Sans', sans-serif;
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
-  background: #f0f2f5;
+  margin: 0;
+  padding: 0;
+  background: url("A_digital_illustration_depicts_a_3D_printing_cost_.png") no-repeat center center fixed;
+  background-size: cover;
 }
 
-h1 {
+.container {
+  background-color: rgba(255, 255, 255, 0.85);
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  font-size: 18px; /* zwiększono */
+}
+
+h1, h2 {
   text-align: center;
-  color: #333;
+  color: #222;
+  margin-bottom: 20px;
+  font-size: 28px; /* zwiększono */
 }
 
 label {
   display: block;
-  margin-top: 15px;
-  font-weight: 700;
+  margin-top: 18px;
+  font-weight: bold;
+  font-size: 18px; /* zwiększono */
 }
 
 input {
   width: 100%;
-  padding: 8px;
-  font-size: 16px;
-  margin-top: 5px;
-  box-sizing: border-box;
+  padding: 12px;
+  font-size: 18px; /* zwiększono */
+  margin-top: 6px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 4px;
 }
 
 button {
-  margin-top: 20px;
-  padding: 10px;
-  font-size: 16px;
+  margin-top: 28px;
+  padding: 14px;
+  font-size: 18px; /* zwiększono */
   width: 100%;
   background-color: #28a745;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -43,14 +55,7 @@ button:hover {
   background-color: #218838;
 }
 
-.results {
-  margin-top: 30px;
-  background: white;
-  padding: 15px;
-  border-radius: 6px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
 .results p {
-  margin: 5px 0;
+  margin: 10px 0;
+  font-size: 18px; /* zwiększono */
 }
