@@ -1,83 +1,84 @@
 body {
-  font-family: 'Alumni Sans', sans-serif;
+  font-family: 'Alumni Sans SC', sans-serif;
+  background-image: url('A_digital_illustration_exhibits_a_blueprint-style_.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
   margin: 0;
   padding: 0;
-  background: url("A_digital_illustration_depicts_a_3D_printing_cost_.png") no-repeat center center fixed;
-  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  min-height: 100vh;
 }
 
 .container {
   background-color: rgba(255, 255, 255, 0.85);
+  padding: 25px 30px;
+  margin: 40px 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
   max-width: 500px;
-  margin: 40px auto;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
-  font-size: 18px;
+  width: 100%;
 }
 
-h1, h2 {
+h1 {
   text-align: center;
-  color: #222;
-  margin-bottom: 20px;
-  font-size: 28px;
+  font-size: 2.5em;
+  margin-bottom: 25px;
+  font-weight: 600;
 }
 
 label {
   display: block;
-  margin-top: 18px;
-  font-weight: bold;
-  font-size: 18px;
+  margin-bottom: 14px;
+  font-size: 1.3em;
 }
 
-input {
+input[type="number"] {
   width: 100%;
-  padding: 8px 10px; /* zmniejszone wymiary */
-  font-size: 16px;
+  padding: 10px 12px;
+  font-size: 1.2em;
   margin-top: 6px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  margin-bottom: 18px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 button {
-  margin-top: 24px;
-  padding: 12px;
-  font-size: 17px;
   width: 100%;
-  background-color: #28a745;
+  padding: 12px;
+  font-size: 1.4em;
+  font-weight: bold;
+  background-color: #27a49d;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background-color: #218838;
+  background-color: #208a85;
 }
 
-.results p {
-  margin: 10px 0;
-  font-size: 18px;
-}
-
-/* === RESPONSYWNOŚĆ === */
-@media screen and (max-width: 600px) {
-  .container {
-    margin: 20px;
-    padding: 20px;
-    max-width: 100%;
-    border-radius: 10px;
-  }
-
-  h1, h2 {
-    font-size: 22px;
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2em;
   }
 
   label {
-    font-size: 16px;
+    font-size: 1.1em;
   }
 
-  input, button, .results p {
-    font-size: 16px;
+  input[type="number"] {
+    font-size: 1em;
+    padding: 8px;
+  }
+
+  button {
+    font-size: 1.2em;
+    padding: 10px;
   }
 }
