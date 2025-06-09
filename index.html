@@ -2,46 +2,47 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kalkulator Druku 3D</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Import czcionki Alumni Sans SC przez Bunny Fonts -->
   <link href="https://fonts.bunny.net/css?family=alumni-sans:400,700" rel="stylesheet" />
 </head>
 <body>
-  <h1>Kalkulator Druku 3D</h1>
+  <div class="container">
+    <h1>Kalkulator Druku 3D</h1>
 
-  <label>⏱️ Czas druku – godziny:</label>
-  <input type="number" id="godziny" />
+    <label>⏱️ Czas druku – godziny:</label>
+    <input type="number" id="godziny" />
 
-  <label>⏱️ Czas druku – minuty:</label>
-  <input type="number" id="minuty" />
+    <label>⏱️ Czas druku – minuty:</label>
+    <input type="number" id="minuty" />
 
-  <label>📏 Ilość filamentu (w gramach):</label>
-  <input type="number" step="0.01" id="filament" />
+    <label>📏 Ilość filamentu (w gramach):</label>
+    <input type="number" step="0.01" id="filament" />
 
-  <label>💰 Cena filamentu za 1 kg (zł):</label>
-  <input type="number" step="0.01" id="cena_filamentu" />
+    <label>💰 Cena filamentu za 1 kg (zł):</label>
+    <input type="number" step="0.01" id="cena_filamentu" />
 
-  <label>🔢 Zużycie energii z licznika (kWh):</label>
-  <input type="number" step="0.01" id="zuzycie_kwh" />
+    <label>🔢 Zużycie energii z licznika (kWh):</label>
+    <input type="number" step="0.01" id="zuzycie_kwh" />
 
-  <label>🔌 Koszt 1 kWh (zł):</label>
-  <input type="number" step="0.001" id="koszt_kwh" />
+    <label>🔌 Koszt 1 kWh (zł):</label>
+    <input type="number" step="0.001" id="koszt_kwh" />
 
-  <label>👨‍🔧 Stawka roboczogodziny (zł/h):</label>
-  <input type="number" step="0.01" id="stawka" />
+    <label>👨‍🔧 Stawka roboczogodziny (zł/h):</label>
+    <input type="number" step="0.01" id="stawka" />
 
-  <button onclick="obliczKoszt()">Oblicz koszt</button>
+    <button onclick="obliczKoszt()">Oblicz koszt</button>
 
-  <div class="results" id="wyniki" style="display:none;">
-    <h2>📊 Podsumowanie</h2>
-    <p id="czas"></p>
-    <p id="koszt_materialu"></p>
-    <p id="koszt_energii"></p>
-    <p id="koszt_robocizny"></p>
-    <p id="calkowity"></p>
-    <p id="zaokraglony"></p>
+    <div class="results" id="wyniki" style="display:none;">
+      <h2>📊 Podsumowanie</h2>
+      <p id="czas"></p>
+      <p id="koszt_materialu"></p>
+      <p id="koszt_energii"></p>
+      <p id="koszt_robocizny"></p>
+      <p id="calkowity"></p>
+      <p id="zaokraglony"></p>
+    </div>
   </div>
 
   <script>
