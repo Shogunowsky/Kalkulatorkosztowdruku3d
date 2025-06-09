@@ -27,6 +27,36 @@ const translations = {
   }
 };
 
+let exchangeRates = {
+  PLN: 1,
+  EUR: 4.5,
+  USD: 4.0
+};
+
+const currencySymbols = {
+  PLN: "zł",
+  EUR: "€",
+  USD: "$"
+};
+
+async function fetchExchangeRates() {
+  try {
+    const response = await fetch('https://api.exchangerate.host/latest?base=PLN&symbols=EUR,USD,PLN');
+    const data = await response.json();
+
+    // Przeliczamy, bo API zwraca ile PLN jest w 1 EUR i 1 USD
+    // My chcemy ile PLN = 1 EUR itd., więc odwracamy kursy
+    exchangeRates.EUR = 1 / data.rates.EUR;
+    exchangeRates.USD = 1 / data.rates.USD;
+    exchangeRates.PLN = 1; // PLN względem PLN
+
+    console.log("Aktualne kursy walut:", exchangeRates);
+  } catch (error) {
+    console.error('Błąd pobierania kursów:', error);
+    // fallback do statycznych kursów (już są w exchangeRates)
+  }
+}
+
 function updateLanguage(lang) {
   const t = translations[lang];
   document.querySelector('h1').textContent = t.title;
@@ -42,11 +72,6 @@ function updateLanguage(lang) {
   document.querySelector('.result-cost-label').textContent = t.resultText;
 }
 
-document.getElementById("language").addEventListener("change", function () {
-  updateLanguage(this.value);
-});
-updateLanguage("pl");
-
 function calculate() {
   const hours = parseFloat(document.getElementById("hours").value) || 0;
   const minutes = parseFloat(document.getElementById("minutes").value) || 0;
@@ -60,7 +85,26 @@ function calculate() {
   const materialCost = (filament / 1000) * filamentPrice;
   const energyCost = power * powerCost;
   const laborCost = totalTime * laborRate;
-  const totalCost = materialCost + energyCost + laborCost;
+  const totalCostPLN = materialCost + energyCost + laborCost;
 
-  document.getElementById("totalCost").textContent = totalCost.toFixed(2) + " zł";
+  const selectedCurrency = document.getElementById("currency").value;
+  const rate = exchangeRates[selectedCurrency];
+  const symbol = currencySymbols[selectedCurrency];
+
+  const displayCost = totalCostPLN / rate;
+
+  document.getElementById("totalCost").textContent = displayCost.toFixed(2) + " " + symbol;
 }
+
+document.getElementById("language").addEventListener("change", function () {
+  updateLanguage(this.value);
+  calculate();
+});
+
+document.getElementById("currency").addEventListener("change", calculate);
+
+// Pobierz kursy walut i inicjuj kalkulator
+fetchExchangeRates().then(() => {
+  updateLanguage("pl");
+  calculate();
+});
