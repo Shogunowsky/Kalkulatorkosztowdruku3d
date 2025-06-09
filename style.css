@@ -59,7 +59,7 @@ button:hover {
   font-size: 1.3rem;
 }
 
-.lang-switch {
+.lang-switch, .currency-switch {
   display: flex;
   justify-content: flex-end;
   align-items: center;
