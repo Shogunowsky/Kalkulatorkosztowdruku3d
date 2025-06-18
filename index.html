@@ -7,10 +7,62 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Alumni Sans SC', sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 25px;
+      border-radius: 15px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-bottom: 15px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005f99;
+    }
+    .checkbox-group {
+      margin: 15px 0;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Kalkulator Kosztów Druku 3D</h1>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="uwzglednij_energie" checked /> Uwzględnij koszt energii ⚡</label>
+      <label><input type="checkbox" id="uwzglednij_robocizne" checked /> Uwzględnij koszt robocizny 👷</label>
+    </div>
+
     <form id="form">
       <label>🕒 Czas druku – godziny:
         <input type="number" id="godziny" required />
@@ -28,25 +80,43 @@
         <input type="number" id="cena_filamentu" step="0.01" required />
       </label>
 
-      <label>⚡️ Zużycie energii z licznika (kWh):
-        <input type="number" id="energia" step="0.01" required />
-      </label>
+      <div id="energia_fields">
+        <label>⚡ Zużycie energii z licznika (kWh):
+          <input type="number" id="energia" step="0.01" />
+        </label>
 
-      <label>🔌 Koszt 1 kWh (zł):
-        <input type="number" id="koszt_kwh" step="0.01" required />
-      </label>
+        <label>🔌 Koszt 1 kWh (zł):
+          <input type="number" id="koszt_kwh" step="0.01" />
+        </label>
+      </div>
 
-      <label>👷 Stawka roboczogodziny (zł/h):
-        <input type="number" id="stawka" step="0.01" required />
-      </label>
+      <div id="robocizna_fields">
+        <label>👷 Stawka roboczogodziny (zł/h):
+          <input type="number" id="stawka" step="0.01" />
+        </label>
+      </div>
 
       <button type="submit">Oblicz koszt</button>
     </form>
 
-    <div id="wynik" style="margin-top: 20px; font-size: 1.3em;"></div>
+    <div id="wynik" style="margin-top: 20px; font-size: 1.2em;"></div>
   </div>
 
   <script>
+    const uwzglednijEnergie = document.getElementById("uwzglednij_energie");
+    const uwzglednijRobocizne = document.getElementById("uwzglednij_robocizne");
+    const energiaFields = document.getElementById("energia_fields");
+    const robociznaFields = document.getElementById("robocizna_fields");
+
+    function toggleFields() {
+      energiaFields.style.display = uwzglednijEnergie.checked ? "block" : "none";
+      robociznaFields.style.display = uwzglednijRobocizne.checked ? "block" : "none";
+    }
+
+    uwzglednijEnergie.addEventListener("change", toggleFields);
+    uwzglednijRobocizne.addEventListener("change", toggleFields);
+    toggleFields();
+
     document.getElementById("form").addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -54,24 +124,32 @@
       const minuty = parseFloat(document.getElementById("minuty").value) || 0;
       const filament = parseFloat(document.getElementById("filament").value);
       const cena_filamentu = parseFloat(document.getElementById("cena_filamentu").value);
-      const energia = parseFloat(document.getElementById("energia").value);
-      const koszt_kwh = parseFloat(document.getElementById("koszt_kwh").value);
-      const stawka = parseFloat(document.getElementById("stawka").value);
+      const energia = parseFloat(document.getElementById("energia").value) || 0;
+      const koszt_kwh = parseFloat(document.getElementById("koszt_kwh").value) || 0;
+      const stawka = parseFloat(document.getElementById("stawka").value) || 0;
 
       const czas = godziny + (minuty / 60);
       const koszt_materialu = (filament / 1000) * cena_filamentu;
-      const koszt_energii = energia * koszt_kwh;
-      const koszt_robocizny = czas * stawka;
+      const koszt_energii = uwzglednijEnergie.checked ? energia * koszt_kwh : 0;
+      const koszt_robocizny = uwzglednijRobocizne.checked ? czas * stawka : 0;
       const koszt_calkowity = koszt_materialu + koszt_energii + koszt_robocizny;
       const zaokraglony = Math.round(koszt_calkowity);
 
-      document.getElementById("wynik").innerHTML = `
+      let wynikHTML = `
         🧵 Koszt materiału: <b>${koszt_materialu.toFixed(2)} zł</b><br>
-        ⚡ Koszt energii: <b>${koszt_energii.toFixed(2)} zł</b><br>
-        👷 Koszt robocizny: <b>${koszt_robocizny.toFixed(2)} zł</b><br>
+      `;
+      if (uwzglednijEnergie.checked) {
+        wynikHTML += `⚡ Koszt energii: <b>${koszt_energii.toFixed(2)} zł</b><br>`;
+      }
+      if (uwzglednijRobocizne.checked) {
+        wynikHTML += `👷 Koszt robocizny: <b>${koszt_robocizny.toFixed(2)} zł</b><br>`;
+      }
+      wynikHTML += `
         💵 Całkowity koszt: <b>${koszt_calkowity.toFixed(2)} zł</b><br>
         💰 Cena po zaokrągleniu: <b>${zaokraglony} zł</b>
       `;
+
+      document.getElementById("wynik").innerHTML = wynikHTML;
     });
   </script>
 </body>
