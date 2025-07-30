@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kalkulator kosztów Druku 3D</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:wght@500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,51 +13,44 @@
     <h1>Kalkulator Kosztów Druku 3D</h1>
     <form id="form">
       <div class="form-group">
-        <label>🕒 Czas druku – godziny:
-          <input type="number" id="godziny" required />
-        </label>
+        <label for="godziny">🕒 Czas druku – godziny:</label>
+        <input type="number" id="godziny" required />
       </div>
 
       <div class="form-group">
-        <label>⏱️ Czas druku – minuty:
-          <input type="number" id="minuty" required />
-        </label>
+        <label for="minuty">⏱️ Czas druku – minuty:</label>
+        <input type="number" id="minuty" required />
       </div>
 
       <div class="form-group">
-        <label>📏 Ilość filamentu (w gramach):
-          <input type="number" id="filament" required />
-        </label>
+        <label for="filament">📏 Ilość filamentu (w gramach):</label>
+        <input type="number" id="filament" required />
       </div>
 
       <div class="form-group">
-        <label>💰 Cena filamentu za 1 kg (zł):
-          <input type="number" id="cena_filamentu" step="0.01" required />
-        </label>
+        <label for="cena_filamentu">💰 Cena filamentu za 1 kg (zł):</label>
+        <input type="number" id="cena_filamentu" step="0.01" required />
       </div>
 
       <div class="form-group">
-        <label>⚡️ Moc drukarki (w watach):
-          <input type="number" id="moc" required />
-        </label>
+        <label for="moc">⚡ Moc drukarki (w watach):</label>
+        <input type="number" id="moc" step="1" required />
       </div>
 
       <div class="form-group">
-        <label>🔌 Koszt 1 kWh (zł):
-          <input type="number" id="koszt_kwh" step="0.01" required />
-        </label>
+        <label for="koszt_kwh">🔌 Koszt 1 kWh (zł):</label>
+        <input type="number" id="koszt_kwh" step="0.01" required />
       </div>
 
       <div class="form-group">
-        <label>👷 Stawka roboczogodziny (zł/h):
-          <input type="number" id="stawka" step="0.01" required />
-        </label>
+        <label for="stawka">👷‍♂️ Stawka roboczogodziny (zł/h):</label>
+        <input type="number" id="stawka" step="0.01" required />
       </div>
 
       <button type="submit">Oblicz koszt</button>
     </form>
 
-    <div id="wynik"></div>
+    <div id="wynik" style="margin-top: 30px; font-size: 1.5em;"></div>
   </div>
 
   <script>
@@ -73,23 +66,18 @@
       const stawka = parseFloat(document.getElementById("stawka").value);
 
       const czas = godziny + (minuty / 60);
-
       const koszt_materialu = (filament / 1000) * cena_filamentu;
-      const zuzycie_kwh = (moc * czas) / 1000;
-      const koszt_energii = zuzycie_kwh * koszt_kwh;
+      const koszt_energii = (czas * moc / 1000) * koszt_kwh;
       const koszt_robocizny = czas * stawka;
       const koszt_calkowity = koszt_materialu + koszt_energii + koszt_robocizny;
       const zaokraglony = Math.round(koszt_calkowity);
 
       document.getElementById("wynik").innerHTML = `
-        <div class="result">
-          🧵 Koszt materiału: <b>${koszt_materialu.toFixed(2)} zł</b><br>
-          ⚡ Zużycie energii: <b>${zuzycie_kwh.toFixed(2)} kWh</b><br>
-          ⚡ Koszt energii: <b>${koszt_energii.toFixed(2)} zł</b><br>
-          👷 Koszt robocizny: <b>${koszt_robocizny.toFixed(2)} zł</b><br>
-          💵 Całkowity koszt: <b>${koszt_calkowity.toFixed(2)} zł</b><br>
-          💰 Cena po zaokrągleniu: <b>${zaokraglony} zł</b>
-        </div>
+        🧵 Koszt materiału: <b>${koszt_materialu.toFixed(2)} zł</b><br>
+        ⚡ Koszt energii: <b>${koszt_energii.toFixed(2)} zł</b><br>
+        👷 Koszt robocizny: <b>${koszt_robocizny.toFixed(2)} zł</b><br>
+        💵 Całkowity koszt: <b>${koszt_calkowity.toFixed(2)} zł</b><br>
+        💰 Cena po zaokrągleniu: <b>${zaokraglony} zł</b>
       `;
     });
   </script>
