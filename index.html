@@ -12,33 +12,32 @@
   <div class="container">
     <h1>Kalkulator Kosztów Druku 3D</h1>
     <form id="form">
-      
-      <label><input type="checkbox" id="czas_check" checked /> 🕒 Czas druku:</label>
-      <label>Godziny:
-        <input type="number" id="godziny" />
-      </label>
-      <label>Minuty:
-        <input type="number" id="minuty" />
+      <label>🕒 Czas druku – godziny:
+        <input type="number" id="godziny" required />
       </label>
 
-      <label><input type="checkbox" id="filament_check" checked /> 📏 Ilość filamentu (w gramach):
-        <input type="number" id="filament" />
+      <label>⏱️ Czas druku – minuty:
+        <input type="number" id="minuty" required />
       </label>
 
-      <label><input type="checkbox" id="cena_filamentu_check" checked /> 💰 Cena filamentu za 1 kg (zł):
-        <input type="number" id="cena_filamentu" step="0.01" />
+      <label>📏 Ilość filamentu (w gramach):
+        <input type="number" id="filament" required />
       </label>
 
-      <label><input type="checkbox" id="energia_check" checked /> ⚡️ Zużycie energii z licznika (kWh):
-        <input type="number" id="energia" step="0.01" />
+      <label>💰 Cena filamentu za 1 kg (zł):
+        <input type="number" id="cena_filamentu" step="0.01" required />
       </label>
 
-      <label><input type="checkbox" id="koszt_kwh_check" checked /> 🔌 Koszt 1 kWh (zł):
-        <input type="number" id="koszt_kwh" step="0.01" />
+      <label>⚡️ Moc drukarki (w watach):
+        <input type="number" id="moc" required />
       </label>
 
-      <label><input type="checkbox" id="stawka_check" checked /> 👷 Stawka roboczogodziny (zł/h):
-        <input type="number" id="stawka" step="0.01" />
+      <label>🔌 Koszt 1 kWh (zł):
+        <input type="number" id="koszt_kwh" step="0.01" required />
+      </label>
+
+      <label>👷 Stawka roboczogodziny (zł/h):
+        <input type="number" id="stawka" step="0.01" required />
       </label>
 
       <button type="submit">Oblicz koszt</button>
@@ -51,45 +50,26 @@
     document.getElementById("form").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      let koszt_materialu = 0;
-      let koszt_energii = 0;
-      let koszt_robocizny = 0;
-
-      // Sprawdzanie opcji
-      const uwzglednijCzas = document.getElementById("czas_check").checked;
-      const uwzglednijFilament = document.getElementById("filament_check").checked;
-      const uwzglednijCenaFilamentu = document.getElementById("cena_filamentu_check").checked;
-      const uwzglednijEnergia = document.getElementById("energia_check").checked;
-      const uwzglednijKosztKwh = document.getElementById("koszt_kwh_check").checked;
-      const uwzglednijStawka = document.getElementById("stawka_check").checked;
-
       const godziny = parseFloat(document.getElementById("godziny").value) || 0;
       const minuty = parseFloat(document.getElementById("minuty").value) || 0;
+      const filament = parseFloat(document.getElementById("filament").value);
+      const cena_filamentu = parseFloat(document.getElementById("cena_filamentu").value);
+      const moc = parseFloat(document.getElementById("moc").value); // moc w watach
+      const koszt_kwh = parseFloat(document.getElementById("koszt_kwh").value);
+      const stawka = parseFloat(document.getElementById("stawka").value);
+
       const czas = godziny + (minuty / 60);
 
-      const filament = parseFloat(document.getElementById("filament").value) || 0;
-      const cena_filamentu = parseFloat(document.getElementById("cena_filamentu").value) || 0;
-      const energia = parseFloat(document.getElementById("energia").value) || 0;
-      const koszt_kwh = parseFloat(document.getElementById("koszt_kwh").value) || 0;
-      const stawka = parseFloat(document.getElementById("stawka").value) || 0;
-
-      if (uwzglednijFilament && uwzglednijCenaFilamentu) {
-        koszt_materialu = (filament / 1000) * cena_filamentu;
-      }
-
-      if (uwzglednijEnergia && uwzglednijKosztKwh) {
-        koszt_energii = energia * koszt_kwh;
-      }
-
-      if (uwzglednijCzas && uwzglednijStawka) {
-        koszt_robocizny = czas * stawka;
-      }
-
+      const koszt_materialu = (filament / 1000) * cena_filamentu;
+      const zuzycie_kwh = (moc * czas) / 1000; // przeliczenie z W na kWh
+      const koszt_energii = zuzycie_kwh * koszt_kwh;
+      const koszt_robocizny = czas * stawka;
       const koszt_calkowity = koszt_materialu + koszt_energii + koszt_robocizny;
       const zaokraglony = Math.round(koszt_calkowity);
 
       document.getElementById("wynik").innerHTML = `
         🧵 Koszt materiału: <b>${koszt_materialu.toFixed(2)} zł</b><br>
+        ⚡ Zużycie energii: <b>${zuzycie_kwh.toFixed(2)} kWh</b><br>
         ⚡ Koszt energii: <b>${koszt_energii.toFixed(2)} zł</b><br>
         👷 Koszt robocizny: <b>${koszt_robocizny.toFixed(2)} zł</b><br>
         💵 Całkowity koszt: <b>${koszt_calkowity.toFixed(2)} zł</b><br>
