@@ -3,112 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Kalkulator kosztów druku 3D</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
 <h1>Kalkulator kosztów druku 3D</h1>
 
-<form id="form">
+<div class="card">
 
-<div class="form-group">
-<label>Czas druku — godziny</label>
-<input type="number" id="godziny" required>
-</div>
+<label>Czas druku (godziny)</label>
+<input type="number" id="time" placeholder="np. 5">
 
-<div class="form-group">
-<label>Czas druku — minuty</label>
-<input type="number" id="minuty" required>
-</div>
+<label>Zużycie filamentu (gramy)</label>
+<input type="number" id="weight" placeholder="np. 120">
 
-<div class="form-group">
-<label>Ilość filamentu (g)</label>
-<input type="number" id="filament" required>
-</div>
-
-<div class="form-group">
 <label>Rodzaj filamentu</label>
-
-<select id="material">
-<option value="55">PLA (55 zł/kg)</option>
-<option value="33">PETG (33 zł/kg)</option>
-<option value="65">ABS (65 zł/kg)</option>
-<option value="45">TPU (45 zł/kg)</option>
+<select id="filament">
+<option value="pla">PLA (55 zł/kg)</option>
+<option value="petg">PETG (33 zł/kg)</option>
+<option value="abs">ABS (65 zł/kg)</option>
+<option value="tpu">TPU (45 zł/kg)</option>
 </select>
 
 </div>
 
-<button type="submit">Oblicz koszt</button>
+<div class="card results">
 
-</form>
+<h2>Wyniki</h2>
 
-<div id="wynik"></div>
+<div class="resultItem">
+<span>Materiał</span>
+<span id="materialCost">0 zł</span>
+</div>
+
+<div class="resultItem">
+<span>Energia</span>
+<span id="energyCost">0 zł</span>
+</div>
+
+<div class="resultItem">
+<span>Robocizna</span>
+<span id="laborCost">0 zł</span>
+</div>
+
+<div class="total">
+Koszt produkcji: <span id="totalCost">0 zł</span>
+</div>
+
+<div class="salePrice">
+Sugerowana cena sprzedaży: <span id="salePrice">0 zł</span>
+</div>
+
+<div id="profitability"></div>
 
 </div>
 
+<div class="card">
 
-<script>
+<h2>Podział kosztów</h2>
 
-document.getElementById("form").addEventListener("submit", function(e){
+<canvas id="costChart"></canvas>
 
-e.preventDefault();
+</div>
 
-const godziny = parseFloat(document.getElementById("godziny").value) || 0;
-const minuty = parseFloat(document.getElementById("minuty").value) || 0;
+</div>
 
-const filament = parseFloat(document.getElementById("filament").value);
-const cena_filamentu = parseFloat(document.getElementById("material").value);
-
-const czas = godziny + (minuty / 60);
-
-
-/* STAŁE */
-
-const moc = 400;
-const koszt_kwh = 1.20;
-const stawka = 5;
-
-
-/* OBLICZENIA */
-
-const koszt_materialu = (filament / 1000) * cena_filamentu;
-
-const zuzycie_kwh = (czas * moc) / 1000;
-
-const koszt_energii = zuzycie_kwh * koszt_kwh;
-
-const koszt_robocizny = czas * stawka;
-
-const koszt_calkowity =
-koszt_materialu +
-koszt_energii +
-koszt_robocizny;
-
-const zaokraglony = Math.round(koszt_calkowity);
-
-
-/* WYNIK */
-
-document.getElementById("wynik").innerHTML =
-
-`🧵 Koszt materiału: <b>${koszt_materialu.toFixed(2)} zł</b><br>
-⚡ Zużycie energii: <b>${zuzycie_kwh.toFixed(2)} kWh</b><br>
-⚡ Koszt energii: <b>${koszt_energii.toFixed(2)} zł</b><br>
-👷 Koszt robocizny: <b>${koszt_robocizny.toFixed(2)} zł</b><br>
-💰 Całkowity koszt: <b>${koszt_calkowity.toFixed(2)} zł</b><br>
-💵 Cena po zaokrągleniu: <b>${zaokraglony} zł</b>`;
-
-});
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
