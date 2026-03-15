@@ -3,77 +3,194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator kosztów druku 3D</title>
+
+<title>Kalkulator kosztów Druku 3D</title>
+
+<link rel="icon" href="favicon.ico" type="image/x-icon"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:wght@400;600&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
 
-<div class="app">
+<div class="container">
 
 <h1>Kalkulator kosztów druku 3D</h1>
 
-<div class="card">
+<form id="form">
 
-<label>Czas druku (h:mm)</label>
-<input type="text" id="time" placeholder="np. 3:45">
+<label>
+🕒 Czas druku – godziny
+<input type="number" id="godziny">
+</label>
 
-<label>Zużycie filamentu (gramy)</label>
-<input type="number" id="weight" placeholder="np. 120">
+<label>
+⏱️ Czas druku – minuty
+<input type="number" id="minuty">
+</label>
 
-<label>Rodzaj filamentu</label>
-<select id="filament">
-<option value="pla">PLA (55 zł/kg)</option>
-<option value="petg">PETG (33 zł/kg)</option>
-<option value="abs">ABS (65 zł/kg)</option>
-<option value="tpu">TPU (45 zł/kg)</option>
+<label>
+📋 Czas z Orca Slicer (np. 3h 45m)
+<input type="text" id="orca_time" placeholder="np. 3h 20m">
+</label>
+
+<label>
+📏 Ilość filamentu (gramy)
+<input type="number" id="filament" required>
+</label>
+
+<label>
+🧵 Rodzaj filamentu
+<select id="filament_typ">
+<option value="pla">PLA – 55 zł/kg</option>
+<option value="petg">PETG – 60 zł/kg</option>
+<option value="abs">ABS – 60 zł/kg</option>
+<option value="tpu">TPU – 100 zł/kg</option>
 </select>
+</label>
+
+<button type="submit">Oblicz koszt</button>
+
+</form>
+
+<div class="result-panel" id="wynik"></div>
+
+<canvas id="chart"></canvas>
 
 </div>
 
-<div class="card results">
+<script>
 
-<h2>Wyniki</h2>
+const printerPower = 400
+const electricityCost = 1.20
+const laborCost = 5
 
-<div class="resultItem">
-<span>Materiał</span>
-<span id="materialCost">0 zł</span>
-</div>
+const materials = {
 
-<div class="resultItem">
-<span>Energia</span>
-<span id="energyCost">0 zł</span>
-</div>
+pla:{
+price:55,
+amortization:0.30
+},
 
-<div class="resultItem">
-<span>Robocizna</span>
-<span id="laborCost">0 zł</span>
-</div>
+petg:{
+price:60,
+amortization:0.40
+},
 
-<div class="total">
-Koszt produkcji: <span id="totalCost">0 zł</span>
-</div>
+abs:{
+price:60,
+amortization:0.50
+},
 
-<div class="salePrice">
-Sugerowana cena sprzedaży: <span id="salePrice">0 zł</span>
-</div>
+tpu:{
+price:100,
+amortization:0.60
+}
 
-<div id="profitability"></div>
+}
 
-</div>
+function convertTimeToHours(timeString){
 
-<div class="card">
+let hours = 0
+let minutes = 0
+let seconds = 0
 
-<h2>Podział kosztów</h2>
+const h = timeString.match(/(\d+)\s*h/)
+const m = timeString.match(/(\d+)\s*m/)
+const s = timeString.match(/(\d+)\s*s/)
 
-<canvas id="costChart"></canvas>
+if(h) hours = parseFloat(h[1])
+if(m) minutes = parseFloat(m[1])
+if(s) seconds = parseFloat(s[1])
 
-</div>
+return hours + (minutes/60) + (seconds/3600)
 
-</div>
+}
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
+document.getElementById("form").addEventListener("submit", function(e){
+
+e.preventDefault()
+
+let godziny = parseFloat(document.getElementById("godziny").value) || 0
+let minuty = parseFloat(document.getElementById("minuty").value) || 0
+
+const orcaInput = document.getElementById("orca_time").value
+
+let czas
+
+if(orcaInput){
+czas = convertTimeToHours(orcaInput)
+}else{
+czas = godziny + (minuty/60)
+}
+
+const filament = parseFloat(document.getElementById("filament").value)
+
+const materialType = document.getElementById("filament_typ").value
+
+const filamentPrice = materials[materialType].price
+const amortizationRate = materials[materialType].amortization
+
+const koszt_materialu = (filament/1000) * filamentPrice
+
+const energia = (printerPower/1000) * czas
+const koszt_energii = energia * electricityCost
+
+const koszt_robocizny = czas * laborCost
+
+const koszt_amortyzacji = czas * amortizationRate
+
+const koszt_calkowity = koszt_materialu + koszt_energii + koszt_robocizny + koszt_amortyzacji
+
+const cena_sprzedazy = Math.ceil(koszt_calkowity)
+
+document.getElementById("wynik").innerHTML =
+
+`
+🧵 Koszt materiału: <b>${koszt_materialu.toFixed(2)} zł</b><br>
+⚡ Koszt energii: <b>${koszt_energii.toFixed(2)} zł</b><br>
+👷 Robocizna: <b>${koszt_robocizny.toFixed(2)} zł</b><br>
+🔧 Amortyzacja drukarki: <b>${koszt_amortyzacji.toFixed(2)} zł</b><br>
+💰 Całkowity koszt: <b>${koszt_calkowity.toFixed(2)} zł</b><br>
+💵 Cena sprzedaży: <b>${cena_sprzedazy} zł</b>
+`
+
+drawChart(koszt_materialu,koszt_energii,koszt_robocizny,koszt_amortyzacji)
+
+})
+
+function drawChart(material,energy,labor,amortization){
+
+const ctx = document.getElementById('chart')
+
+new Chart(ctx,{
+type:'doughnut',
+data:{
+labels:['Materiał','Energia','Robocizna','Amortyzacja'],
+datasets:[{
+data:[material,energy,labor,amortization]
+}]
+},
+options:{
+plugins:{
+legend:{
+labels:{
+color:'white',
+font:{size:16}
+}
+}
+}
+}
+})
+
+}
+
+</script>
 
 </body>
 </html>
