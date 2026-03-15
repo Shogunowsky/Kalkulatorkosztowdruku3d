@@ -46,9 +46,25 @@ color:'white'
 }
 });
 
+function convertTimeToHours(timeString){
+
+if(!timeString.includes(":")) return 0;
+
+const parts = timeString.split(":");
+
+const hours = parseFloat(parts[0]) || 0;
+const minutes = parseFloat(parts[1]) || 0;
+
+return hours + (minutes / 60);
+
+}
+
 function calculate(){
 
-const time = parseFloat(timeInput.value) || 0;
+const timeString = timeInput.value;
+
+const time = convertTimeToHours(timeString);
+
 const weight = parseFloat(weightInput.value) || 0;
 const filament = filamentSelect.value;
 
