@@ -1,111 +1,116 @@
-const power = 400;
-const electricityPrice = 1.20;
-const hourlyRate = 5;
+const printerPower = 400
+const electricityCost = 1.20
+const laborCost = 5
 
-const filamentPrices = {
-pla:55,
-petg:33,
-abs:65,
-tpu:45
-};
+const materials = {
 
-const timeInput = document.getElementById("time");
-const weightInput = document.getElementById("weight");
-const filamentSelect = document.getElementById("filament");
+pla:{price:55, amortization:0.30},
+petg:{price:60, amortization:0.40},
+abs:{price:60, amortization:0.50},
+tpu:{price:100, amortization:0.60}
 
-const materialCostText = document.getElementById("materialCost");
-const energyCostText = document.getElementById("energyCost");
-const laborCostText = document.getElementById("laborCost");
-const totalCostText = document.getElementById("totalCost");
-const salePriceText = document.getElementById("salePrice");
-const profitabilityText = document.getElementById("profitability");
+}
 
-const ctx = document.getElementById('costChart');
+function convertTime(time){
 
-let chart = new Chart(ctx,{
+const parts = time.split(":")
+
+const h = parseFloat(parts[0]) || 0
+const m = parseFloat(parts[1]) || 0
+
+return h + (m/60)
+
+}
+
+let chart
+
+document.getElementById("form").addEventListener("submit", function(e){
+
+e.preventDefault()
+
+const czasInput = document.getElementById("czas").value
+
+const czas = convertTime(czasInput)
+
+const filament = parseFloat(document.getElementById("filament").value)
+
+const materialType = document.getElementById("filament_typ").value
+
+const filamentPrice = materials[materialType].price
+const amortRate = materials[materialType].amortization
+
+const koszt_materialu = (filament/1000) * filamentPrice
+
+const energia = (printerPower/1000) * czas
+const koszt_energii = energia * electricityCost
+
+const koszt_robocizny = czas * laborCost
+
+const koszt_amortyzacji = czas * amortRate
+
+const koszt_calkowity = koszt_materialu + koszt_energii + koszt_robocizny + koszt_amortyzacji
+
+const sugerowana_cena = Math.ceil(koszt_calkowity * 1.4)
+
+document.getElementById("wynik").innerHTML =
+
+`
+🧵 Materiał: <b>${koszt_materialu.toFixed(2)} zł</b><br>
+⚡ Energia: <b>${koszt_energii.toFixed(2)} zł</b><br>
+👷 Robocizna: <b>${koszt_robocizny.toFixed(2)} zł</b><br>
+🔧 Amortyzacja: <b>${koszt_amortyzacji.toFixed(2)} zł</b><br>
+<br>
+💰 Koszt produkcji: <b>${koszt_calkowity.toFixed(2)} zł</b><br>
+💵 Sugerowana cena sprzedaży: <b>${sugerowana_cena} zł</b>
+`
+
+updateChart(koszt_materialu,koszt_energii,koszt_robocizny,koszt_amortyzacji)
+
+})
+
+function updateChart(material,energy,labor,amort){
+
+const ctx = document.getElementById("chart")
+
+if(chart){
+chart.destroy()
+}
+
+chart = new Chart(ctx,{
+
 type:'doughnut',
+
 data:{
-labels:['Materiał','Energia','Robocizna'],
+
+labels:['Materiał','Energia','Robocizna','Amortyzacja'],
+
 datasets:[{
-data:[0,0,0],
-backgroundColor:[
-'#22c55e',
-'#3b82f6',
-'#f59e0b'
-]
+
+data:[material,energy,labor,amort]
+
 }]
+
 },
+
 options:{
+
 plugins:{
+
 legend:{
+
 labels:{
-color:'white'
-}
-}
-}
-}
-});
 
-function convertTimeToHours(timeString){
-
-if(!timeString.includes(":")) return 0;
-
-const parts = timeString.split(":");
-
-const hours = parseFloat(parts[0]) || 0;
-const minutes = parseFloat(parts[1]) || 0;
-
-return hours + (minutes / 60);
+color:'white',
+font:{size:16}
 
 }
 
-function calculate(){
-
-const timeString = timeInput.value;
-
-const time = convertTimeToHours(timeString);
-
-const weight = parseFloat(weightInput.value) || 0;
-const filament = filamentSelect.value;
-
-const filamentPricePerGram = filamentPrices[filament] / 1000;
-
-const materialCost = weight * filamentPricePerGram;
-const energyCost = (power/1000) * time * electricityPrice;
-const laborCost = time * hourlyRate;
-
-const totalCost = materialCost + energyCost + laborCost;
-
-const salePrice = totalCost * 1.4;
-
-materialCostText.textContent = materialCost.toFixed(2) + " zł";
-energyCostText.textContent = energyCost.toFixed(2) + " zł";
-laborCostText.textContent = laborCost.toFixed(2) + " zł";
-totalCostText.textContent = totalCost.toFixed(2) + " zł";
-salePriceText.textContent = salePrice.toFixed(2) + " zł";
-
-if(totalCost < 10){
-profitabilityText.textContent = "🟢 Bardzo opłacalny wydruk";
 }
-else if(totalCost < 30){
-profitabilityText.textContent = "🟡 Średni koszt wydruku";
-}
-else{
-profitabilityText.textContent = "🔴 Drogi wydruk";
-}
-
-chart.data.datasets[0].data = [
-materialCost,
-energyCost,
-laborCost
-];
-
-chart.update();
 
 }
 
-timeInput.addEventListener("input",calculate);
-weightInput.addEventListener("input",calculate);
-filamentSelect.addEventListener("change",calculate);
+}
 
-calculate();
+})
+
+}
