@@ -24,17 +24,24 @@ return h + (m/60)
 
 let chart
 
-document.getElementById("form").addEventListener("submit", function(e){
-
-e.preventDefault()
+function calculate(){
 
 const czasInput = document.getElementById("czas").value
+const filamentInput = document.getElementById("filament").value
+
+if(!czasInput || !filamentInput){
+return
+}
 
 const czas = convertTime(czasInput)
 
-const filament = parseFloat(document.getElementById("filament").value)
+const filament = parseFloat(filamentInput)
 
 const materialType = document.getElementById("filament_typ").value
+
+localStorage.setItem("czas",czasInput)
+localStorage.setItem("filament",filament)
+localStorage.setItem("material",materialType)
 
 const filamentPrice = materials[materialType].price
 const amortRate = materials[materialType].amortization
@@ -66,7 +73,17 @@ document.getElementById("wynik").innerHTML =
 
 updateChart(koszt_materialu,koszt_energii,koszt_robocizny,koszt_amortyzacji)
 
-})
+updateBar(koszt_calkowity)
+
+}
+
+function updateBar(cost){
+
+const percent = Math.min(cost / 50 * 100,100)
+
+document.getElementById("cost-fill").style.width = percent + "%"
+
+}
 
 function updateChart(material,energy,labor,amort){
 
@@ -86,7 +103,14 @@ labels:['Materiał','Energia','Robocizna','Amortyzacja'],
 
 datasets:[{
 
-data:[material,energy,labor,amort]
+data:[material,energy,labor,amort],
+
+backgroundColor:[
+"#00cc66",
+"#ffaa00",
+"#3399ff",
+"#ff4444"
+]
 
 }]
 
@@ -99,10 +123,8 @@ plugins:{
 legend:{
 
 labels:{
-
 color:'white',
 font:{size:16}
-
 }
 
 }
@@ -114,3 +136,29 @@ font:{size:16}
 })
 
 }
+
+window.onload = function(){
+
+const savedTime = localStorage.getItem("czas")
+const savedFilament = localStorage.getItem("filament")
+const savedMaterial = localStorage.getItem("material")
+
+if(savedTime){
+document.getElementById("czas").value = savedTime
+}
+
+if(savedFilament){
+document.getElementById("filament").value = savedFilament
+}
+
+if(savedMaterial){
+document.getElementById("filament_typ").value = savedMaterial
+}
+
+calculate()
+
+}
+
+document.getElementById("czas").addEventListener("input", calculate)
+document.getElementById("filament").addEventListener("input", calculate)
+document.getElementById("filament_typ").addEventListener("change", calculate)
