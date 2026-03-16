@@ -1,6 +1,6 @@
-body {
+body{
 
-font-family:'Alumni Sans SC',sans-serif;
+font-family:Arial;
 
 background:#111;
 
@@ -24,15 +24,11 @@ padding:30px;
 
 border-radius:15px;
 
-box-shadow:0 0 20px rgba(0,0,0,0.5);
-
 }
 
 h1{
 
 text-align:center;
-
-margin-bottom:20px;
 
 }
 
@@ -88,7 +84,7 @@ background:#00aa55;
 
 }
 
-.result-panel{
+#wynik{
 
 margin-top:25px;
 
