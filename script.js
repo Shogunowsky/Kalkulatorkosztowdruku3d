@@ -1,164 +1,111 @@
-const printerPower = 400
-const electricityCost = 1.20
-const laborCost = 5
+body{
 
-const materials = {
+font-family:Arial;
 
-pla:{price:55, amortization:0.30},
-petg:{price:60, amortization:0.40},
-abs:{price:60, amortization:0.50},
-tpu:{price:100, amortization:0.60}
+background:url("background.png") no-repeat center center fixed;
+background-size:cover;
 
-}
-
-function convertTime(time){
-
-const parts = time.split(":")
-
-const h = parseFloat(parts[0]) || 0
-const m = parseFloat(parts[1]) || 0
-
-return h + (m/60)
+margin:0;
+padding:0;
+color:white;
 
 }
 
-let chart
+.container{
 
-function calculate(){
-
-const czasInput = document.getElementById("czas").value
-const filamentInput = document.getElementById("filament").value
-
-if(!czasInput || !filamentInput){
-return
-}
-
-const czas = convertTime(czasInput)
-
-const filament = parseFloat(filamentInput)
-
-const materialType = document.getElementById("filament_typ").value
-
-localStorage.setItem("czas",czasInput)
-localStorage.setItem("filament",filament)
-localStorage.setItem("material",materialType)
-
-const filamentPrice = materials[materialType].price
-const amortRate = materials[materialType].amortization
-
-const koszt_materialu = (filament/1000) * filamentPrice
-
-const energia = (printerPower/1000) * czas
-const koszt_energii = energia * electricityCost
-
-const koszt_robocizny = czas * laborCost
-
-const koszt_amortyzacji = czas * amortRate
-
-const koszt_calkowity = koszt_materialu + koszt_energii + koszt_robocizny + koszt_amortyzacji
-
-const sugerowana_cena = Math.ceil(koszt_calkowity * 1.4)
-
-document.getElementById("wynik").innerHTML =
-
-`
-🧵 Materiał: <b>${koszt_materialu.toFixed(2)} zł</b><br>
-⚡ Energia: <b>${koszt_energii.toFixed(2)} zł</b><br>
-👷 Robocizna: <b>${koszt_robocizny.toFixed(2)} zł</b><br>
-🔧 Amortyzacja: <b>${koszt_amortyzacji.toFixed(2)} zł</b><br>
-<br>
-💰 Koszt produkcji: <b>${koszt_calkowity.toFixed(2)} zł</b><br>
-💵 Sugerowana cena sprzedaży: <b>${sugerowana_cena} zł</b>
-`
-
-updateChart(koszt_materialu,koszt_energii,koszt_robocizny,koszt_amortyzacji)
-
-updateBar(koszt_calkowity)
+max-width:420px;
+margin:40px auto;
+background:rgba(30,30,30,0.9);
+padding:30px;
+border-radius:15px;
 
 }
 
-function updateBar(cost){
+h1{
 
-const percent = Math.min(cost / 50 * 100,100)
-
-document.getElementById("cost-fill").style.width = percent + "%"
+text-align:center;
 
 }
 
-function updateChart(material,energy,labor,amort){
+label{
 
-const ctx = document.getElementById("chart")
-
-if(chart){
-chart.destroy()
-}
-
-chart = new Chart(ctx,{
-
-type:'doughnut',
-
-data:{
-
-labels:['Materiał','Energia','Robocizna','Amortyzacja'],
-
-datasets:[{
-
-data:[material,energy,labor,amort],
-
-backgroundColor:[
-"#00cc66",
-"#ffaa00",
-"#3399ff",
-"#ff4444"
-]
-
-}]
-
-},
-
-options:{
-
-plugins:{
-
-legend:{
-
-labels:{
-color:'white',
-font:{size:16}
-}
+display:block;
+margin-top:15px;
+font-size:18px;
 
 }
 
-}
+input,select{
+
+width:100%;
+padding:10px;
+margin-top:5px;
+border-radius:8px;
+border:none;
+font-size:16px;
 
 }
 
-})
+#wynik{
+
+margin-top:25px;
+font-size:18px;
+line-height:1.6;
 
 }
 
-window.onload = function(){
+/* 🔥 PASEK SEGMENTOWY */
 
-const savedTime = localStorage.getItem("czas")
-const savedFilament = localStorage.getItem("filament")
-const savedMaterial = localStorage.getItem("material")
+.cost-bar{
 
-if(savedTime){
-document.getElementById("czas").value = savedTime
-}
-
-if(savedFilament){
-document.getElementById("filament").value = savedFilament
-}
-
-if(savedMaterial){
-document.getElementById("filament_typ").value = savedMaterial
-}
-
-calculate()
+position:relative;
+width:100%;
+height:22px;
+background:#2a2a2a;
+border-radius:20px;
+margin-top:20px;
+overflow:hidden;
 
 }
 
-document.getElementById("czas").addEventListener("input", calculate)
-document.getElementById("filament").addEventListener("input", calculate)
-document.getElementById("filament_typ").addEventListener("change", calculate)
+#cost-segments{
+
+display:flex;
+height:100%;
+width:100%;
+
+}
+
+.segment{
+
+height:100%;
+transition:width 0.6s ease;
+
+}
+
+/* kolory */
+
+.material{ background:#00cc66; }
+.energy{ background:#ffaa00; }
+.labor{ background:#3399ff; }
+.amort{ background:#ff4444; }
+
+#cost-label{
+
+position:absolute;
+width:100%;
+text-align:center;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:14px;
+font-weight:bold;
+color:white;
+
+}
+
+canvas{
+
+margin-top:30px;
+
+}
